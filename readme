@@ -1,0 +1,9 @@
+java -cp .:lib/log4j/*:lib/commons-io-1.4.jar:lib/commons-lang-2.4.jar:lib/kamikaze-3.0.3.jar:lib/leveldbjni-all-1.7.jar:lib/lucene-core-3.5.0.jar:lib/QuarkDB.jar:lib/trove-3.0.3.jar org.ptg.quarkdb.JavaQuarkDB
+
+mkfifo in
+mkfifo out
+find /vicepa/data/*.uniq |parallel -j 20 cat {} > in
+find /vicepa/data/*.uniq |parallel --progress --wait -j 20 cat {} > in
+tail -f out
+root@giant2:/vicepb/work/QuarkDB# tail -f in |java -Xmx20G  -DINSTNAME=uniq -cp .:lib/log4j/*:lib/commons-io-1.4.jar:lib/commons-lang-2.4.jar:lib/kamikaze-3.0.3.jar:lib/leveldbjni-all-1.7.jar:lib/lucene-core-3.5.0.jar:lib/QuarkDB.jar:lib/trove-3.0.3.jar org.ptg.quarkdb.JavaQuarkDB 100000 uniq  >out^C
+ nc -k -l 4000 <out >in
